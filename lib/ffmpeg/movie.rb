@@ -5,7 +5,7 @@ module FFMPEG
     attr_reader :path, :duration, :time, :bitrate, :rotation, :creation_time
     attr_reader :video_stream, :video_codec, :video_bitrate, :colorspace, :resolution, :dar
     attr_reader :audio_stream, :audio_codec, :audio_bitrate, :audio_sample_rate
-    attr_reader :container
+    attr_reader :container, :video_stream_map, :audio_stream_map
 
     def initialize(path)
       raise Errno::ENOENT, "the file '#{path}' does not exist" unless File.exists?(path)
@@ -39,8 +39,14 @@ module FFMPEG
       output[/Video:\ (.*)/]
       @video_stream = $1
 
+      video_stream_map_tmp = output[/Stream #.{3}(.*)Video/]
+      @video_stream_map = video_stream_map_tmp.nil? ? nil : video_stream_map_tmp[/Stream #.{3}/][-3,3] 
+      
       output[/Audio:\ (.*)/]
       @audio_stream = $1
+
+      audio_stream_map_tmp = output[/Stream #.{3}(.*)Audio/]
+      @audio_stream_map = audio_stream_map_tmp.nil? ? nil : audio_stream_map_tmp[/Stream #.{3}/][-3,3]
 
       if video_stream
         @video_codec, @colorspace, resolution, video_bitrate = video_stream.split(/\s?,\s?/)
