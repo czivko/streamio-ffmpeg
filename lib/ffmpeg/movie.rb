@@ -27,10 +27,10 @@ module FFMPEG
       output[/start: (\d*\.\d*)/]
       @time = $1 ? $1.to_f : 0.0
 
-      output[/creation_time {1,}: {1,}(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})/]
+      output[/creation_time {1,}: {1,}(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})/]
       @creation_time = $1 ? Time.parse("#{$1}") : nil
 
-      output[/date {1,}: {1,}(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})/]
+      output[/date {1,}: {1,}(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})/]
       @date = $1 ? Time.parse("#{$1}") : nil
 
       output[/bitrate: (\d*)/]
