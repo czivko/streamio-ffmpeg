@@ -5,7 +5,7 @@ module FFMPEG
     attr_reader :path, :duration, :time, :bitrate, :rotation, :creation_time
     attr_reader :video_stream, :video_codec, :video_bitrate, :colorspace, :resolution, :dar
     attr_reader :audio_stream, :audio_codec, :audio_bitrate, :audio_sample_rate
-    attr_reader :container, :video_stream_map, :audio_stream_map, :date
+    attr_reader :container, :video_stream_map, :audio_stream_map, :date, :genre_as_double, :sync_creation_time
 
     def initialize(path)
       raise Errno::ENOENT, "the file '#{path}' does not exist" unless File.exists?(path)
@@ -32,6 +32,12 @@ module FFMPEG
 
       output[/date {1,}: {1,}(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})/]
       @date = $1 ? Time.parse("#{$1}") : nil
+
+      output[/genre {1,}: {1,}(\d*\.\d*)/]
+      @genre_as_double = $1 ? $1.to_f : 0.0
+      
+      output[/sync_creation_time: {1,}(\d*\.\d*)/]
+      @sync_creation_time = $1 ? $1.to_f : 0.0
 
       output[/bitrate: (\d*)/]
       @bitrate = $1 ? $1.to_i : nil
